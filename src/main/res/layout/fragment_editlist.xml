@@ -37,19 +37,5 @@
         android:inputType="textMultiLine"
         android:minLines="3"
         />
-    <Button
-        android:id="@+id/btn_imgur"
-        style="?android:attr/borderlessButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/imgur"
-        />
   </LinearLayout>
-  <Button
-      android:id="@+id/btn_ready"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="center_horizontal"
-      android:text="@string/ready"
-      />
 </LinearLayout>

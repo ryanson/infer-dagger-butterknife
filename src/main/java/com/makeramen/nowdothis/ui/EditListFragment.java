@@ -1,87 +1,61 @@
 package com.makeramen.nowdothis.ui;
 
 import android.app.Fragment;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnClick;
+
 import com.makeramen.nowdothis.NowDoThisApp;
 import com.makeramen.nowdothis.R;
 import com.makeramen.nowdothis.data.TodoStorage;
-import com.makeramen.nowdothis.ui.imgur.ImgurUploadActivity;
+
+import java.util.List;
+
 import javax.inject.Inject;
 
-import static android.app.Activity.RESULT_OK;
+public class EditListFragment extends Fragment implements InterfaceExample {
 
-public class EditListFragment extends Fragment {
+    //Dagger example.
+    @Inject TodoStorage todoStorage;
+    //ButterKnife example.
+    @InjectView(R.id.editor) EditText editor;
 
-  static final int REQUEST_CODE_IMGUR = 3;
+    TodoStorage initExample;
 
-  InputMethodManager imm;
-  @Inject TodoStorage todoStorage;
-  @InjectView(R.id.editor) EditText editor;
-
-  @Override public View onCreateView(@NonNull LayoutInflater inflater,
-      @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-    View view = inflater.inflate(R.layout.fragment_editlist, container, false);
-    ButterKnife.inject(this, view);
-    return view;
-  }
-
-  @Override public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
-    NowDoThisApp.getComponent(getActivity()).inject(this);
-    imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-    editor.setText(TextUtils.join("\n", todoStorage.getTodos()));
-  }
-
-  @Override public void onResume() {
-    super.onResume();
-    editor.post(new Runnable() {
-      @Override public void run() {
-        editor.requestFocus();
-        editor.setSelection(editor.length());
-        imm.showSoftInput(editor, InputMethodManager.SHOW_IMPLICIT);
-      }
-    });
-  }
-
-  @Override public void onPause() {
-    super.onPause();
-    imm.hideSoftInputFromWindow(editor.getWindowToken(), 0);
-    todoStorage.saveTodos(editor.getText().toString());
-  }
-
-  @OnClick(R.id.btn_ready) void readyClick() {
-    getFragmentManager().beginTransaction()
-        .replace(getId(), new TodoFragment())
-        .commit();
-  }
-
-  @OnClick(R.id.btn_imgur) void imgurClick() {
-    startActivityForResult(new Intent(getActivity(), ImgurUploadActivity.class),
-        REQUEST_CODE_IMGUR);
-  }
-
-  @Override public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    switch (requestCode) {
-      case REQUEST_CODE_IMGUR:
-        if (resultCode == RESULT_OK && data != null) {
-          String link = data.getStringExtra(ImgurUploadActivity.EXTRA_IMG_URL);
-          editor.setText(editor.getText().append("\n").append(link));
-        }
-        return;
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_editlist, container, false);
+        ButterKnife.inject(this, view);
+        return view;
     }
-    super.onActivityResult(requestCode, resultCode, data);
-  }
+
+    public void init() {
+        initExample = new TodoStorage();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        NowDoThisApp.getComponent(getActivity()).inject(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        todoStorage.saveTodos(editor.getText().toString());
+    }
+
+    @Override
+    @Nullable
+    public String returnNull() {
+        return null;
+    }
 }
